@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String           @unique
+  hashed_password String
+  transactionLogs TransactionLog[]
+  Wastes          Waste[]
+  rewards         Reward[]
+}
+
+model TransactionLog {
+  transaction_log_id String   @id @default(auto()) @map("_id") @db.ObjectId
+  user               User     @relation(fields: [user_id], references: [user_id])
+  user_id            String   @db.ObjectId
+  date               DateTime
+  action             String
+}
+
+model Waste {
+  waste_id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  user              User              @relation(fields: [user_id], references: [user_id])
+  user_id           String            @db.ObjectId
+  classification    Classification    @relation(fields: [classification_id], references: [classification_id])
+  classification_id String            @db.ObjectId
+  image             Bytes
+  date              DateTime
+  binVerifications  BinVerification[]
+}
+
+model Classification {
+  classification_id String  @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  description       String?
+  Waste             Waste[]
+}
+
+model BinVerification {
+  bin_verification_id String   @id @default(auto()) @map("_id") @db.ObjectId
+  waste               Waste    @relation(fields: [waste_id], references: [waste_id])
+  waste_id            String   @db.ObjectId
+  bin                 TrashBin @relation(fields: [bin_id], references: [bin_id])
+  bin_id              String   @db.ObjectId
+  image               Bytes
+  verification_status String
+  date                DateTime
+}
+
+model TrashBin {
+  bin_id           String            @id @default(auto()) @map("_id") @db.ObjectId
+  name             String
+  image            Bytes
+  description      String?
+  binVerifications BinVerification[]
+}
+
+model Reward {
+  reward_id String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [user_id], references: [user_id])
+  user_id   String   @db.ObjectId
+  points    Int
+  date      DateTime
+}
