@@ -22,18 +22,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
     });
   }
 
-  parseErrorMessage(message: string | { message?: string }): string {
-    let parsedMessage = 'something went wrong';
-
-    console.log('message', message);
+  parseErrorMessage(
+    message: string | { message?: string | string[] },
+  ): string | string[] {
+    let parsedMessage: string | string[] = 'something went wrong';
 
     if (typeof message === 'string') {
       parsedMessage = message;
-    } else if (
-      typeof message === 'object' &&
-      'message' in message &&
-      typeof message.message === 'string'
-    ) {
+    } else if (message?.message) {
       parsedMessage = message.message;
     }
 
