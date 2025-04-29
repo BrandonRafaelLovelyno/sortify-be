@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from './auth.dto';
 import { AppMailerService } from 'src/mailer/mailer.service';
@@ -13,14 +13,25 @@ export class AuthService {
   ) {}
 
   async signUp(body: SignUpDto) {
+    const existingRequest = await this.checkExistingSignUpRequest(body.email);
+    if (existingRequest) {
+      throw new ConflictException('Email already has a pending sign up request');
+    }
+  
     const signUpRequest = await this.createSignUpRequest(body);
     const jwtToken = this.token.generateToken(signUpRequest.id);
-
+  
     await this.emailService.sendEmail(
       body.email,
       'Email Verification',
       jwtToken,
     );
+  }
+
+  private async checkExistingSignUpRequest(email: string) {
+    return this.prismaService.signUpRequest.findFirst({
+      where: { email }
+    });
   }
 
   private async createSignUpRequest(body: SignUpDto) {
