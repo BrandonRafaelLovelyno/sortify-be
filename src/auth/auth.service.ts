@@ -1,19 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { SignUpDto } from './auth.dto';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { SignUpDto, VerifyUserDto, SignInDto } from './auth.dto';
 import { AppMailerService } from 'src/mailer/mailer.service';
 import { Token } from 'src/common/token';
+import { Response } from 'express';
+import { AuthHelper } from './auth.helper';
+import { Cookie } from 'src/common/cookie';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private prismaService: PrismaService,
+    private authHelper: AuthHelper,
     private emailService: AppMailerService,
     private token: Token,
+    private cookie: Cookie,
   ) {}
 
   async signUp(body: SignUpDto) {
-    const signUpRequest = await this.createSignUpRequest(body);
+    const existingRequest = await this.authHelper.checkExistingSignUpRequest(body.email);
+    if (existingRequest) {
+      throw new ConflictException('Email already has a pending sign up request');
+    }
+    
+    const signUpRequest = await this.authHelper.createSignUpRequest(body);
     const jwtToken = this.token.generateToken(signUpRequest.id);
 
     await this.emailService.sendEmail(
@@ -23,14 +31,42 @@ export class AuthService {
     );
   }
 
-  private async createSignUpRequest(body: SignUpDto) {
-    return this.prismaService.signUpRequest.create({
-      data: {
-        email: body.email,
-        hashedPassword: body.hashedPassword,
-        name: body.name,
-        expiredAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
-      },
-    });
+  async verifyUser(body: VerifyUserDto) {
+    const signUpRequestId = this.token.verifyToken(body.token);
+    
+    const signUpRequest = await this.authHelper.findSignUpRequestById(signUpRequestId);
+    if (!signUpRequest) {
+      throw new NotFoundException('Invalid verification token');
+    }
+    
+    const user = await this.authHelper.createUser(
+      signUpRequest.email,
+      signUpRequest.hashedPassword,
+      signUpRequest.name
+    );
+    
+    await this.authHelper.deleteSignUpRequest(signUpRequestId);
+    return user;
+  }
+
+  async login(body: SignInDto, response: Response) {
+    const user = await this.authHelper.findUserByEmail(body.email);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordMatch = await this.authHelper.comparePasswords(
+      body.password,
+      user.hashedPassword
+    );
+
+    if (!passwordMatch) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const token = this.token.generateToken(user.id);
+    this.cookie.sendToken(response, 'auth_token', token);
+
+    return user;
   }
 }

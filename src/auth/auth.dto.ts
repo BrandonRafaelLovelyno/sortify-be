@@ -13,6 +13,12 @@ export class SignUpDto {
   name: string;
 }
 
+export class VerifyUserDto {
+  @IsString()
+  @MinLength(10)
+  token: string;
+}
+
 export class SignInDto {
   @IsEmail()
   email: string;

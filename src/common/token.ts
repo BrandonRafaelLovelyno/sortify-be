@@ -24,4 +24,13 @@ export class Token {
   generateToken(data: string): string {
     return jwt.sign({ data }, this.jwtSecret);
   }
+
+  verifyToken(token: string): string {
+    try {
+      const decoded = jwt.verify(token, this.jwtSecret) as { data: string };
+      return decoded.data;
+    } catch (err) {
+      throw new Error('Invalid token');
+    }
+  }
 }
