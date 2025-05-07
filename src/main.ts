@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception-filter';
 import { ValidationPipe } from '@nestjs/common';
+// LoggerMiddleware import removed as it will be configured in AppModule
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,6 +14,8 @@ async function bootstrap() {
         : process.env.PRODUCTION_FRONTEND_URL,
     credentials: true,
   });
+
+  // Logger middleware removed from here
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
