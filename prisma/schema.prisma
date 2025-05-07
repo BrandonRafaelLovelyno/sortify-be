@@ -15,6 +15,8 @@ model User {
   transactionLogs  TransactionLog[]
   wastes           Waste[]
   rewards          Reward[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 model SignUpRequest {
@@ -23,13 +25,14 @@ model SignUpRequest {
   email          String
   hashedPassword String
   expiredAt      DateTime
+  createdAt      DateTime @default(now())
 }
 
 model TransactionLog {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime
+  createdAt DateTime @default(now())
   action    String
 }
 
@@ -37,53 +40,63 @@ model Waste {
   id                String           @id @default(auto()) @map("_id") @db.ObjectId
   userId            String           @db.ObjectId
   user              User             @relation(fields: [userId], references: [id])
-  categoryId        String           @db.ObjectId
-  category          WasteCategory    @relation(fields: [categoryId], references: [id])
   classificationId  String?          @db.ObjectId @unique
   classification    Classification?  @relation(fields: [classificationId], references: [id])
-  binVerificationId String?          @db.ObjectId @unique
-  binVerification   BinVerification? @relation(fields: [binVerificationId], references: [id])
-  image             String
+  image             String           // URL or path to image storage
   date              DateTime
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 }
 
 model Classification {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  waste       Waste?
-  name        String
-  description String?
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  waste             Waste?
+  wasteCategoryId   String         @db.ObjectId
+  wasteCategory     WasteCategory  @relation(fields: [wasteCategoryId], references: [id])
+  binVerificationId String         @db.ObjectId
+  binVerification   BinVerification @relation(fields: [binVerificationId], references: [id])
+  isTrue            Boolean
+  createdAt         DateTime       @default(now())
 }
 
 model WasteCategory {
-  id          String  @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String
-  image       String
-  wastes      Waste[]
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  binId           String           @db.ObjectId @unique
+  bin             TrashBin          @relation(fields: [binId], references: [id]) 
+  name            String
+  description     String
+  image           String           // URL or path to image storage
+  classifications Classification[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model BinVerification {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  waste   Waste?
-  binId   String   @db.ObjectId
-  bin     TrashBin @relation(fields: [binId], references: [id])
-  image   Bytes
-  status  String
-  date    DateTime
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  binId           String           @db.ObjectId
+  bin             TrashBin         @relation(fields: [binId], references: [id])
+  classifications Classification[]
+  image           String           // Changed to URL or path instead of binaryg
+  status          String
+  date            DateTime
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model TrashBin {
   id               String            @id @default(auto()) @map("_id") @db.ObjectId
   name             String
-  image            Bytes
+  image            String            // Changed to URL or path instead of binary
   description      String?
   binVerifications BinVerification[]
+  wasteCategory    WasteCategory?
 }
 
 model Reward {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId String   @db.ObjectId
-  user   User     @relation(fields: [userId], references: [id])
-  points Int
-  date   DateTime
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  points    Int
+  date      DateTime
+  createdAt DateTime @default(now())
 }
