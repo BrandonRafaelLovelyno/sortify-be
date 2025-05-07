@@ -33,4 +33,12 @@ export class Token {
       throw new Error('Invalid token');
     }
   }
+
+  decodeToken(token: string): any {
+    try {
+      return jwt.decode(token);
+    } catch (err) {
+      throw new Error('Invalid token format');
+    }
+  }
 }

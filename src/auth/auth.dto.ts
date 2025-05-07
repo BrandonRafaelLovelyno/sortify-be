@@ -26,3 +26,7 @@ export class SignInDto {
   @IsString()
   password: string;
 }
+
+export class VerifyTokenDto {
+  token: string;
+}

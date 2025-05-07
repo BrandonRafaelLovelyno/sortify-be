@@ -1,6 +1,13 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignInDto, SignUpDto } from './auth.dto';
+import { SignInDto, SignUpDto, VerifyTokenDto } from './auth.dto';
 import { VerifyUserDto } from './auth.dto';
 import { Response } from 'express';
 
@@ -29,4 +36,10 @@ export class AuthController {
     response.status(HttpStatus.OK).json({ message: 'Login successful', user });
   }
 
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-session')
+  async verifyToken(@Body() body: VerifyTokenDto) {
+    await this.authService.verifySession(body.token);
+    return { message: 'Session verified successfully' };
+  }
 }

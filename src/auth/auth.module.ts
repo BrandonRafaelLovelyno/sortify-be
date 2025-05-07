@@ -5,9 +5,10 @@ import { AuthService } from './auth.service';
 import { AppMailerModule } from 'src/mailer/mailer.module';
 import { CommonModule } from 'src/common/common.module';
 import { AuthHelper } from './auth.helper';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
-  imports: [PrismaModule, AppMailerModule, CommonModule],
+  imports: [PrismaModule, AppMailerModule, CommonModule, UserModule],
   controllers: [AuthController],
   providers: [AuthService, AuthHelper],
 })
