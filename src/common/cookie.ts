@@ -7,7 +7,15 @@ export class Cookie {
   sendToken(response: Response, tokenName: string, token: string) {
     const isProd = process.env.NODE_ENV === 'production';
 
-    const cookie = `${tokenName}=${token}; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=None; Secure; ${isProd ? '' : ''} HttpOnly; Partitioned`;
+    const cookie = [
+      `${tokenName}=${token}`,
+      'Path=/',
+      'Max-Age=' + 7 * 24 * 60 * 60,
+      'SameSite=None',
+      'Secure',
+      'HttpOnly',
+      'Partitioned',
+    ].join('; ');
 
     response.setHeader('Set-Cookie', cookie);
   }
