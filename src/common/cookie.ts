@@ -5,10 +5,11 @@ import { Response } from 'express';
 export class Cookie {
   sendToken(response: Response, tokenName: string, token: string) {
     response.cookie(tokenName, token, {
-      httpOnly: false,
+      httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: '/'
     });
   }
 
