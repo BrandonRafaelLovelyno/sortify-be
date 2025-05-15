@@ -8,14 +8,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'https://sortify-lac.vercel.app'
-    ],
-    // origin:
-    //   process.env.NODE_ENV === 'development'
-    //     ? process.env.DEVELOPMENT_FRONTEND_URL
-    //     : process.env.PRODUCTION_FRONTEND_URL,
+    origin:
+      process.env.NODE_ENV === 'development'
+        ? process.env.DEVELOPMENT_FRONTEND_URL
+        : process.env.PRODUCTION_FRONTEND_URL,
     credentials: true,
   });
 
