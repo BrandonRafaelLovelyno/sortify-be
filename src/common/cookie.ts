@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Response } from 'express';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class Cookie {
   getCookie(request: any, tokenName: string) {
     const token = request.cookies?.[tokenName];
     if (!token) {
-      throw new Error('No token provided');
+      throw new UnauthorizedException('No token provided');
     }
     return token;
   }
