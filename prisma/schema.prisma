@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -9,15 +9,15 @@ datasource db {
 }
 
 model User {
-  id               String           @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
-  email            String           @unique
-  hashedPassword   String
-  transactionLogs  TransactionLog[]
-  wastes           Waste[]
-  rewards          Reward[]
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  email           String           @unique
+  hashedPassword  String
+  transactionLogs TransactionLog[]
+  wastes          Waste[]
+  rewards         Reward[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model SignUpRequest {
@@ -29,68 +29,65 @@ model SignUpRequest {
   createdAt      DateTime @default(now())
 }
 
-model TransactionLog {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  action    String
-}
-
 model Waste {
-  id                String           @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String           @db.ObjectId
-  user              User             @relation(fields: [userId], references: [id])
-  classificationId  String?          @db.ObjectId @unique
-  classification    Classification?  @relation(fields: [classificationId], references: [id])
-  image             String           // URL or path to image storage
-  date              DateTime
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId           String          @db.ObjectId
+  user             User            @relation(fields: [userId], references: [id])
+  classificationId String?         @unique @db.ObjectId
+  classification   Classification? @relation(fields: [classificationId], references: [id])
+  image            String // URL or path to image storage
+  date             DateTime
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
 }
 
 model Classification {
-  id                String         @id @default(auto()) @map("_id") @db.ObjectId
+  id                String           @id @default(auto()) @map("_id") @db.ObjectId
   waste             Waste?
-  wasteCategoryId   String         @db.ObjectId
-  wasteCategory     WasteCategory  @relation(fields: [wasteCategoryId], references: [id])
-  binVerificationId String         @db.ObjectId
-  binVerification   BinVerification @relation(fields: [binVerificationId], references: [id])
+  wasteCategoryId   String           @db.ObjectId
+  wasteCategory     WasteCategory    @relation(fields: [wasteCategoryId], references: [id])
+  binVerificationId String?          @db.ObjectId
   isTrue            Boolean
-  createdAt         DateTime       @default(now())
+  createdAt         DateTime         @default(now())
+  BinVerification   BinVerification?
 }
 
 model WasteCategory {
   id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  binId           String           @db.ObjectId @unique
-  bin             TrashBin          @relation(fields: [binId], references: [id]) 
+  binId           String           @unique @db.ObjectId
+  bin             TrashBin         @relation(fields: [binId], references: [id])
   name            String
   description     String
-  image           String           // URL or path to image storage
+  image           String // URL or path to image storage
   classifications Classification[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 }
 
 model BinVerification {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  binId           String           @db.ObjectId
-  bin             TrashBin         @relation(fields: [binId], references: [id])
-  classifications Classification[]
-  image           String           // Changed to URL or path instead of binaryg
-  status          String
-  date            DateTime
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  id               String         @id @default(auto()) @map("_id") @db.ObjectId
+  predictedBinId   String         @db.ObjectId
+  predictedBin     TrashBin       @relation("PredictedBinVerifications", fields: [predictedBinId], references: [id])
+  photoBinId       String         @db.ObjectId
+  photoBin         TrashBin       @relation("PhotoBinVerifications", fields: [photoBinId], references: [id])
+  classificationId String         @unique @db.ObjectId
+  classification   Classification @relation(fields: [classificationId], references: [id])
+  image            String
+  status           String
+  date             DateTime
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
 }
 
 model TrashBin {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  name             String
-  image            String            // Changed to URL or path instead of binary
-  description      String?
-  binVerifications BinVerification[]
-  wasteCategory    WasteCategory?
+  id                        String            @id @default(auto()) @map("_id") @db.ObjectId
+  name                      String
+  image                     String
+  description               String?
+  wasteCategory             WasteCategory?
+  // Explicit relations for both sides
+  predictedBinVerifications BinVerification[] @relation("PredictedBinVerifications")
+  photoBinVerifications     BinVerification[] @relation("PhotoBinVerifications")
 }
 
 model Reward {
