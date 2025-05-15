@@ -4,14 +4,20 @@ import { Response } from 'express';
 @Injectable()
 export class Cookie {
   sendToken(response: Response, tokenName: string, token: string) {
-    response.cookie(tokenName, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    const isProduction = process.env.NODE_ENV === 'production';
+    const maxAgeSeconds = 7 * 24 * 60 * 60; // dalam detik
+  
+    let cookieString = `${tokenName}=${token}; HttpOnly; Secure; Path=/; Max-Age=${maxAgeSeconds}`;
+  
+    // Tambahkan atribut Partitioned dan SameSite sesuai environment
+    if (isProduction) {
+      cookieString += '; SameSite=None; Partitioned';
+    } else {
+      cookieString += '; SameSite=Lax';
+    }
+  
+    response.setHeader('Set-Cookie', cookieString);
   }
-
   getCookie(request: any, tokenName: string) {
     const token = request.cookies?.[tokenName];
     if (!token) {
