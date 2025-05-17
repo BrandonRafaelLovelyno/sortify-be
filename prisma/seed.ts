@@ -17,14 +17,14 @@ async function main() {
   console.log('Seeding WasteCategories...');
   const wasteCategories = await seedWasteCategories();
 
+  console.log('Seeding Wastes...');
+  const wastes = await seedWastes();
+
   console.log('Seeding Classifications...');
-  const classifications = await seedClassifications(wasteCategories);
+  const classifications = await seedClassifications(wastes, wasteCategories);
 
   console.log('Seeding BinVerifications...');
   await seedBinVerifications(classifications);
-
-  console.log('Seeding Wastes...');
-  await seedWastes(classifications);
 
   console.log('Seeding Rewards...');
   await seedRewards(15);
@@ -61,15 +61,34 @@ async function seedWasteCategories() {
   return wasteCategories;
 }
 
-async function seedClassifications(wasteCategories: any[]) {
+async function seedWastes() {
+  const wastes: any[] = [];
+  // Create 30 wastes
+  for (let i = 0; i < 30; i++) {
+    const waste = await prisma.waste.create({
+      data: {
+        userId: USER_ID,
+        image: faker.image.url(),
+        date: faker.date.recent(),
+      },
+    });
+    console.log(`Created waste: ${waste.id}`);
+    wastes.push(waste);
+  }
+  return wastes;
+}
+
+async function seedClassifications(wastes: any[], wasteCategories: any[]) {
   const classifications: any[] = [];
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < wastes.length; i++) {
+    const waste = wastes[i];
     // Distribute classifications evenly across waste categories
     const wasteCategoryId = wasteCategories[i % wasteCategories.length].id;
 
     const classification = await prisma.classification.create({
       data: {
+        wasteId: waste.id,
         wasteCategoryId,
         isTrue: faker.datatype.boolean(),
       },
@@ -106,22 +125,6 @@ async function seedBinVerifications(classifications: any[]) {
     });
 
     console.log(`Created binVerification: ${binVerification.id}`);
-  }
-}
-
-async function seedWastes(classifications: any[]) {
-  // Create wastes with classifications (one waste per classification)
-  for (const classification of classifications) {
-    const waste = await prisma.waste.create({
-      data: {
-        userId: USER_ID,
-        classificationId: classification.id,
-        image: faker.image.url(),
-        date: faker.date.recent(),
-      },
-    });
-
-    console.log(`Created waste with classification: ${waste.id}`);
   }
 }
 
