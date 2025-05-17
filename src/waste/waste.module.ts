@@ -5,9 +5,16 @@ import { CommonModule } from 'src/common/common.module';
 import { WasteController } from './waste.controller';
 import { WasteService } from './waste.service';
 import { UserModule } from 'src/user/user.module';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
 @Module({
-  imports: [PrismaModule, CommonModule, UserModule, ConfigModule],
+  imports: [
+    PrismaModule,
+    CommonModule,
+    UserModule,
+    ConfigModule,
+    CloudinaryModule,
+  ],
   controllers: [WasteController],
   providers: [WasteService],
   exports: [WasteService],

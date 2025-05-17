@@ -10,10 +10,6 @@ export class UserService {
     private tokenService: Token,
   ) {}
 
-  async findByEmail(email: string) {
-    return await this.prismaService.user.findUnique({ where: { email } });
-  }
-
   async findById(id: string) {
     return await this.prismaService.user.findUnique({ where: { id } });
   }
