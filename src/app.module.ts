@@ -6,6 +6,7 @@ import { AppMailerModule } from './mailer/mailer.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { WasteModule } from './waste/waste.module';
 import { UserModule } from './user/user.module';
+import { ClassificationModule } from './classification/classification.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     AppMailerModule,
     WasteModule,
+    ClassificationModule,
     UserModule,
     ConfigModule.forRoot({ isGlobal: true }),
   ],

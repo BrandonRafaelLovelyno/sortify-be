@@ -76,7 +76,7 @@ export class WasteService {
   async classifyWaste(
     file: Express.Multer.File,
     request: any,
-  ): Promise<{ wasteId: string }> {
+  ): Promise<{ classificationId: string }> {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
@@ -114,14 +114,14 @@ export class WasteService {
         },
       });
 
-      await this.prismaService.classification.create({
+      const classification = await this.prismaService.classification.create({
         data: {
           wasteId: waste.id,
           wasteCategoryId: wasteCategory.id,
         },
       });
 
-      const result = { wasteId: waste.id };
+      const result = { classificationId: classification.id };
       return result;
     } catch (error) {
       console.log('Error classifying waste image:', error);

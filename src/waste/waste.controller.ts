@@ -12,7 +12,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { WasteService } from './waste.service';
 import { Request } from 'express';
 import { Cookie } from 'src/common/cookie';
-import { WeeklyProgressResult, ClassificationResult } from './waste.dto';
+import { WeeklyProgressResult } from './waste.dto';
 
 @Controller('waste')
 export class WasteController {
@@ -35,7 +35,7 @@ export class WasteController {
   async classifyWaste(
     @UploadedFile() file: Express.Multer.File,
     @Req() request: Request,
-  ): Promise<{ wasteId: string }> {
+  ): Promise<{ classificationId: string }> {
     return this.wasteService.classifyWaste(file, request);
   }
 }
