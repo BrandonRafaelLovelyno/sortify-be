@@ -51,3 +51,17 @@ export class WeeklyProgressResult {
   @IsObject()
   percentage: WeeklyProgressPercentage;
 }
+
+export interface ClassificationResult {
+  prediction: string;
+  confidence: number;
+}
+
+export interface MulterFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+}

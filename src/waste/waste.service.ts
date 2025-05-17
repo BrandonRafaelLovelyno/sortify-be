@@ -1,9 +1,20 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Token } from 'src/common/token';
-import { WeeklyProgressResult } from 'src/waste/waste.dto';
+import {
+  ClassificationResult,
+  MulterFile,
+  WeeklyProgressResult,
+} from 'src/waste/waste.dto';
 import { UserService } from 'src/user/user.service';
 import { Waste } from '@prisma/client';
+import { ConfigService } from '@nestjs/config';
+import * as FormData from 'form-data';
+import axios from 'axios';
 
 type WasteWithCategory = Waste & {
   classification?: {
@@ -15,11 +26,22 @@ type WasteWithCategory = Waste & {
 
 @Injectable()
 export class WasteService {
+  FAST_API_URL: string;
+
   constructor(
     private prismaService: PrismaService,
     private tokenService: Token,
     private userService: UserService,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    const url = this.configService.get('FAST_API_URL');
+
+    if (url) {
+      this.FAST_API_URL = url;
+    } else {
+      throw new Error('FAST_API_URL is not defined in the configuration');
+    }
+  }
 
   private countWasteByCategory(wastes: WasteWithCategory[]): {
     organik: number;
@@ -121,5 +143,22 @@ export class WasteService {
       count: currentWeekCounts,
       percentage: percentages,
     };
+  }
+
+  async classifyWaste(file: MulterFile): Promise<ClassificationResult> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    const formData = new FormData();
+    formData.append('file', file.buffer, file.originalname);
+
+    try {
+      const response = await axios.post(`${this.FAST_API_URL}`, formData);
+      return response.data;
+    } catch (error) {
+      console.log('Error classifying waste image:', error);
+      throw new BadRequestException('Failed to classify waste image');
+    }
   }
 }
