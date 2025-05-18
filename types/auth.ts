@@ -3,4 +3,5 @@ export interface AuthResult {
   email: string;
   name: string;
   imageUrl: string;
+  points: number;
 }

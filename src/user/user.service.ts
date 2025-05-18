@@ -13,6 +13,14 @@ export class UserService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
+  async getUserPoints(userId: string): Promise<number> {
+    const rewards = await this.prismaService.reward.findMany({
+      where: { userId },
+      select: { points: true },
+    });
+    return rewards.reduce((total, reward) => total + reward.points, 0);
+  }
+
   async findById(id: string) {
     return await this.prismaService.user.findUnique({ where: { id } });
   }
@@ -25,11 +33,14 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
 
+    const points = await this.getUserPoints(userId);
+
     return {
       userId: user.id,
       email: user.email,
       name: user.name,
       imageUrl: user.imageUrl,
+      points,
     };
   }
 
