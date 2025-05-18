@@ -10,11 +10,11 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { AuthResult } from '../../types/auth';
 import { Request } from 'express';
 import { Cookie } from 'src/common/cookie';
+import { UpdatePasswordDto, UpdateUserDto } from './user.dto';
 
 @Controller('user')
 export class UserController {
@@ -39,5 +39,14 @@ export class UserController {
   ) {
     const token = this.cookie.getCookie(request, 'auth_token');
     return await this.userService.updateUser(token, updateUserDto, file);
+  }
+
+  @Patch('password/mine')
+  async updatePassword(
+    @Req() request: Request,
+    @Body() updatePasswordDto: UpdatePasswordDto,
+  ) {
+    const token = this.cookie.getCookie(request, 'auth_token');
+    return await this.userService.updatePassword(token, updatePasswordDto);
   }
 }

@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Token } from 'src/common/token';
 import { AuthResult } from '../../types/auth';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import * as bcrypt from 'bcryptjs';
+import { UpdatePasswordDto, UpdateUserDto } from './user.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService {
@@ -78,5 +83,32 @@ export class UserService {
       name: updatedUser.name,
       imageUrl: updatedUser.imageUrl,
     };
+  }
+
+  async updatePassword(token: string, updatePasswordDto: UpdatePasswordDto) {
+    const userId = this.tokenService.verifyToken(token);
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      updatePasswordDto.currentPassword,
+      user.hashedPassword,
+    );
+
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+
+    const hashedPassword = await bcrypt.hash(updatePasswordDto.newPassword, 10);
+
+    await this.prismaService.user.update({
+      where: { id: userId },
+      data: { hashedPassword },
+    });
+
+    return { message: 'Password updated successfully' };
   }
 }
