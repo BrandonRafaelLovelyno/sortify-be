@@ -1,20 +1,11 @@
-import {
-  Injectable,
-  UnauthorizedException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Token } from 'src/common/token';
-import {
-  ClassificationResult,
-  WeeklyProgressResult,
-} from 'src/waste/waste.dto';
 import { UserService } from 'src/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import * as FormData from 'form-data';
 import axios from 'axios';
 import { Cookie } from 'src/common/cookie';
-import { calculatePercentage, getWasteCountsByTime } from './waste.helper';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
@@ -36,41 +27,6 @@ export class WasteService {
     } else {
       throw new Error('FAST_API_URL is not defined in the configuration');
     }
-  }
-
-  async getWeeklyProgress(token: string): Promise<WeeklyProgressResult> {
-    const userId = this.tokenService.verifyToken(token);
-    const user = await this.userService.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException('Invalid token');
-    }
-
-    const now = new Date();
-
-    const currentWeekCounts = await getWasteCountsByTime(
-      this.prismaService,
-      user.id,
-      now,
-    );
-
-    const lastWeek = new Date(now);
-    lastWeek.setDate(now.getDate() - 7);
-
-    const totalCurrent =
-      currentWeekCounts.organik +
-      currentWeekCounts.anorganik +
-      currentWeekCounts.b3;
-
-    const percentages = {
-      organik: calculatePercentage(currentWeekCounts.organik, totalCurrent),
-      anorganik: calculatePercentage(currentWeekCounts.anorganik, totalCurrent),
-      b3: calculatePercentage(currentWeekCounts.b3, totalCurrent),
-    };
-
-    return {
-      count: currentWeekCounts,
-      percentage: percentages,
-    };
   }
 
   async classifyWaste(

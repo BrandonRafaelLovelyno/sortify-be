@@ -1,6 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserService } from 'src/user/user.service';
+import {
+  calculateGrowthPercentage,
+  calculatePercentage,
+  getWasteCountsByTime,
+} from './classification.helper';
 
 @Injectable()
 export class ClassificationService {
@@ -56,5 +65,47 @@ export class ClassificationService {
     });
 
     return classifications;
+  }
+
+  async getWeeklyProgress(token: string) {
+    const user = await this.userService.getUserFromToken(token);
+    if (!user) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const now = new Date();
+    const currentWeekCounts = await getWasteCountsByTime(
+      this.prisma,
+      user.userId,
+      now,
+      false,
+    );
+
+    const previousWeekCounts = await getWasteCountsByTime(
+      this.prisma,
+      user.userId,
+      now,
+      true,
+    );
+
+    const percentages = {
+      organik: calculateGrowthPercentage(
+        currentWeekCounts.organik,
+        previousWeekCounts.organik,
+      ),
+      anorganik: calculateGrowthPercentage(
+        currentWeekCounts.anorganik,
+        previousWeekCounts.anorganik,
+      ),
+      b3: calculateGrowthPercentage(
+        currentWeekCounts.b3,
+        previousWeekCounts.b3,
+      ),
+    };
+
+    return {
+      count: currentWeekCounts,
+      percentage: percentages,
+    };
   }
 }
