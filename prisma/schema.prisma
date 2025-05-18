@@ -13,6 +13,7 @@ model User {
   name           String
   email          String   @unique
   hashedPassword String
+  imageUrl       String
   wastes         Waste[]
   rewards        Reward[]
   createdAt      DateTime @default(now())

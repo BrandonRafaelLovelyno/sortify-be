@@ -26,6 +26,7 @@ export class UserService {
       userId: user.id,
       email: user.email,
       name: user.name,
+      imageUrl: user.imageUrl,
     };
   }
 }

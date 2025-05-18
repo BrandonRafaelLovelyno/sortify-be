@@ -1,15 +1,25 @@
-import { PrismaService } from "src/prisma/prisma.service";
-import { SignUpDto } from "./auth.dto";
-import { Injectable } from "@nestjs/common";
-import { Token } from "src/common/token";
+import { PrismaService } from 'src/prisma/prisma.service';
+import { SignUpDto } from './auth.dto';
+import { Injectable } from '@nestjs/common';
+import { Token } from 'src/common/token';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthHelper {
-  constructor(private readonly prismaService: PrismaService, private readonly token: Token) {}
+  DEFAULT_USER_IMAGE_URL: string;
+
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly token: Token,
+    private readonly configService: ConfigService,
+  ) {
+    this.DEFAULT_USER_IMAGE_URL =
+      this.configService.get('DEFAULT_USER_IMAGE_URL') ?? '';
+  }
 
   async checkExistingSignUpRequest(email: string) {
     return this.prismaService.signUpRequest.findFirst({
-      where: { email }
+      where: { email },
     });
   }
 
@@ -36,6 +46,7 @@ export class AuthHelper {
         email,
         hashedPassword,
         name,
+        imageUrl: this.DEFAULT_USER_IMAGE_URL,
       },
     });
   }
