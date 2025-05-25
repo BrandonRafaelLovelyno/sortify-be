@@ -20,6 +20,13 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3000);
+  return app;
 }
 
-bootstrap();
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  bootstrap();
+}
+
+// For Vercel serverless deployment
+export default bootstrap;
