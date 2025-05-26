@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ClassificationService } from './classification.service';
 import { Request } from 'express';
-import { Cookie } from 'src/common/cookie';
+import { Cookie } from '../common/cookie';
 
 @Controller('classification')
 export class ClassificationController {

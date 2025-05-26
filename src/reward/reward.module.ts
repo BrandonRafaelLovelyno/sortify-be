@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { RewardController } from './reward.controller';
 import { RewardService } from './reward.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { UserService } from 'src/user/user.service';
-import { Token } from 'src/common/token';
-import { Cookie } from 'src/common/cookie';
-import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
-import { PrismaModule } from 'src/prisma/prisma.module';
-import { UserModule } from 'src/user/user.module';
+import { PrismaService } from '../prisma/prisma.service';
+import { UserService } from '../user/user.service';
+import { Token } from '../common/token';
+import { Cookie } from '../common/cookie';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
+import { PrismaModule } from '../prisma/prisma.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [CloudinaryModule, PrismaModule, UserModule],

@@ -5,11 +5,11 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { SignUpDto, VerifyUserDto, SignInDto } from './auth.dto';
-import { AppMailerService } from 'src/mailer/mailer.service';
-import { Token } from 'src/common/token';
+import { AppMailerService } from '../mailer/mailer.service';
+import { Token } from '../common/token';
 import { Response } from 'express';
 import { AuthHelper } from './auth.helper';
-import { Cookie } from 'src/common/cookie';
+import { Cookie } from '../common/cookie';
 import { UserService } from '../user/user.service';
 
 @Injectable()

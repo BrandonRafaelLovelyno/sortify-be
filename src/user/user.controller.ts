@@ -13,7 +13,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { UserService } from './user.service';
 import { AuthResult } from '../../types/auth';
 import { Request } from 'express';
-import { Cookie } from 'src/common/cookie';
+import { Cookie } from '../common/cookie';
 import { UpdatePasswordDto, UpdateUserDto } from './user.dto';
 
 @Controller('user')
