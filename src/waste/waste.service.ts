@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Token } from '../common/token';
 import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 import axios from 'axios';
 import { Cookie } from '../common/cookie';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
