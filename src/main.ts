@@ -3,9 +3,16 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception-filter';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
+
+const expressApp = express();
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(
+    AppModule,
+    new ExpressAdapter(expressApp),
+  );
 
   app.enableCors({
     origin:
@@ -19,14 +26,19 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.init();
   return app;
 }
 
-// For local development
+// Run locally with `NODE_ENV=development`
 if (process.env.NODE_ENV !== 'production') {
-  bootstrap();
+  bootstrap().then(() => {
+    expressApp.listen(process.env.PORT ?? 3000, () => {
+      console.log(
+        `Server running on http://localhost:${process.env.PORT ?? 3000}`,
+      );
+    });
+  });
 }
 
-// For Vercel serverless deployment
-export default bootstrap;
+export default expressApp;
