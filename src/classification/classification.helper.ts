@@ -1,5 +1,5 @@
 import { Waste } from '@prisma/client';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 type WasteWithCategory = Waste & {
   Classification?: {

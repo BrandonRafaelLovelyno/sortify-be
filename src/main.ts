@@ -30,7 +30,6 @@ async function bootstrap() {
   return app;
 }
 
-// Run locally with `NODE_ENV=development`
 if (process.env.NODE_ENV !== 'production') {
   bootstrap().then(() => {
     expressApp.listen(process.env.PORT ?? 3000, () => {
@@ -41,4 +40,4 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
-export default expressApp;
+export { bootstrap };
