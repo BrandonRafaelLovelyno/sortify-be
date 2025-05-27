@@ -1,26 +1,51 @@
-# Base image
-FROM node:24-alpine3.20
+# Stage 1: Builder - Install dependencies and build the app
+FROM node:24-alpine3.20 AS builder
 
-# Create app directory
-WORKDIR /usr/src/app
+# Install dependencies needed for Prisma
+RUN apk add --no-cache openssl
 
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
+WORKDIR /app
+
+# Copy package files first for better caching
 COPY package*.json ./
+COPY prisma ./prisma
 
-# Install app dependencies
+# Install all dependencies (including devDependencies for building)
 RUN npm install
 
-# Bundle app source
+# Copy remaining files
 COPY . .
 
-# Copy the .env and .env.development files
-COPY .env ./
+# Generate Prisma client
+RUN npx prisma generate
 
-# Creates a "dist" folder with the production build
+# Build the application
 RUN npm run build
 
-# Expose the port on which the app will run
+# Stage 2: Runner - Production-ready image
+FROM node:24-alpine3.20
+
+# Install runtime dependencies for Prisma
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# Copy production dependencies from builder
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+
+# Copy production .env file (if exists)
+COPY --from=builder /app/.env ./
+
+# Generate Prisma client for production
+RUN npx prisma generate
+
+# Optional: Run migrations (often done separately in CI/CD)
+# RUN npx prisma migrate deploy
+
 EXPOSE 5000
 
-# Start the server using the production build
-CMD ["npm", "run", "start:prod"]
+# Start the production server
+CMD ["node", "dist/src/main.js"]

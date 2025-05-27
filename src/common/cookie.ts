@@ -6,7 +6,7 @@ export class Cookie {
   sendToken(response: Response, tokenName: string, token: string) {
     response.cookie(tokenName, token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production' ? true : false,
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
