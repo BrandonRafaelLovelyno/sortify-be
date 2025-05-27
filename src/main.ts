@@ -15,10 +15,7 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin:
-      process.env.NODE_ENV === 'development'
-        ? process.env.DEVELOPMENT_FRONTEND_URL
-        : process.env.PRODUCTION_FRONTEND_URL,
+    origin: [process.env.NEXT_CLIENT_URL, process.env.NEXT_SERVER_URL],
     credentials: true,
   });
 
@@ -30,14 +27,12 @@ async function bootstrap() {
   return app;
 }
 
-if (process.env.NODE_ENV !== 'production') {
-  bootstrap().then(() => {
-    expressApp.listen(process.env.PORT ?? 3000, () => {
-      console.log(
-        `Server running on http://localhost:${process.env.PORT ?? 3000}`,
-      );
-    });
+bootstrap().then(() => {
+  expressApp.listen(process.env.PORT ?? 3000, () => {
+    console.log(
+      `Server running on http://localhost:${process.env.PORT ?? 3000}`,
+    );
   });
-}
+});
 
 export { bootstrap };
