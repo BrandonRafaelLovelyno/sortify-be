@@ -1,7 +1,7 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { SignUpDto } from './auth.dto';
 import { Injectable } from '@nestjs/common';
-import { Token } from 'src/common/token';
+import { Token } from '../common/token';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

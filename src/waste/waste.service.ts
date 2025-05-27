@@ -1,12 +1,12 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { Token } from 'src/common/token';
-import { UserService } from 'src/user/user.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { Token } from '../common/token';
+import { UserService } from '../user/user.service';
 import { ConfigService } from '@nestjs/config';
-import * as FormData from 'form-data';
+import FormData from 'form-data';
 import axios from 'axios';
-import { Cookie } from 'src/common/cookie';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { Cookie } from '../common/cookie';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class WasteService {

@@ -1,7 +1,7 @@
 import { Controller, Get, Req } from '@nestjs/common';
 import { RewardService } from './reward.service';
 import { Request } from 'express';
-import { Cookie } from 'src/common/cookie';
+import { Cookie } from '../common/cookie';
 
 @Controller('reward')
 export class RewardController {
