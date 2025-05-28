@@ -1,4 +1,4 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Param, Req } from '@nestjs/common';
 import { RewardService } from './reward.service';
 import { Request } from 'express';
 import { Cookie } from '../common/cookie';
