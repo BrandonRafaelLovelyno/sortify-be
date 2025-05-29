@@ -3,19 +3,19 @@ version: '3.3'
 services:
   sortify-be:
     container_name: sortify-be
-    image: brandonrafaellovelyno/sortify-be:v2
+    image: brandonrafaellovelyno/sortify_backend:v3.1
     ports:
       - '5000:5000'
+    env_file:
+      - .env
     networks:
       - sortify-network
 
-  sortify:
-    container_name: sortify
-    image: brandonrafaellovelyno/sortify:v2
+  sortify-fe:
+    container_name: sortify-fe
+    image: brandonrafaellovelyno/sortify_frontend:v3
     ports:
       - '3000:3000'
-    networks:
-      - sortify-network
 
   sortify-model:
     container_name: sortify-model
