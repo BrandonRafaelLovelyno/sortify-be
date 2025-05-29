@@ -26,11 +26,14 @@ const countWasteByCategory = (
 
   wastes.forEach((waste) => {
     if (waste.Classification?.wasteCategory) {
+      console.log(
+        `Waste ID: ${waste.id}, Category: ${waste.Classification.wasteCategory.name}`,
+      );
       const category = waste.Classification.wasteCategory.name.toLowerCase();
-      if (category.includes('organik')) {
-        organik++;
-      } else if (category.includes('anorganik')) {
+      if (category.includes('anorganik')) {
         anorganik++;
+      } else if (category.includes('organik')) {
+        organik++;
       } else if (category.includes('b3')) {
         b3++;
       }
