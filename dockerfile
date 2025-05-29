@@ -36,14 +36,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 
-# Copy production .env file (if exists)
-COPY --from=builder /app/.env ./
-
 # Generate Prisma client for production
 RUN npx prisma generate
-
-# Optional: Run migrations (often done separately in CI/CD)
-# RUN npx prisma migrate deploy
 
 EXPOSE 5000
 
