@@ -30,13 +30,11 @@ Sampah menjadi permasalahan mendesak di Yogyakarta dengan **270.153 ton sampah**
 
 ## 💡 **Ide & Solusi – Sortify**  
 
-**Sortify** hadir sebagai solusi berbasis **Computer Vision** untuk mengidentifikasi dan mengklasifikasikan sampah ke dalam **5 kategori**, sesuai dengan sistem pengelolaan sampah di Jerman:  
+**Sortify** hadir sebagai solusi berbasis **Computer Vision** untuk mengidentifikasi dan mengklasifikasikan sampah ke dalam **3 kategori**, sesuai dengan sistem pengelolaan sampah di Jerman:  
 
 ♻️ **Organik** – Sisa makanan, daun, dan bahan yang bisa terurai alami.  
-📄 **Kertas** – Kardus, majalah, dan produk berbasis kertas lainnya.  
-🛍 **Plastik** – Botol plastik, kemasan, dan sampah berbahan plastik.  
-🍾 **Kaca** – Botol dan pecahan kaca.  
-🛠 **Logam** – Kaleng dan barang berbahan dasar logam.  
+📄 **Kertas** – Tidak dapat terurai alami.  
+🛍 **Plastik** – Berbau, Beracun, Berbahaya. 
 
 🔍 Dengan teknologi ini, Sortify dapat membantu masyarakat **lebih mudah memilah sampah**, mengurangi jumlah sampah yang masuk ke TPA, serta meningkatkan efisiensi **daur ulang dan keberlanjutan lingkungan**.  
 
@@ -52,3 +50,50 @@ Sampah menjadi permasalahan mendesak di Yogyakarta dengan **270.153 ton sampah**
 
 ![WhatsApp Image 2025-02-20 at 22 27 07](https://github.com/user-attachments/assets/3982c8a8-96a6-4665-a798-d324d30b9433)
 
+## 🛠️ Instalasi Lokal
+1. Clone Repository
+```bash
+git clone https://github.com/BrandonRafaelLovelyno/sortify-be
+cd sortify-be
+npm install
+```
+2. environment
+```bash
+DATABASE_URL=mongodb+srv://<username>:<password>@<cluster-url>/test?retryWrites=true
+PORT=5000
+
+JWT_SECRET=<long-random-secret>
+
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=587
+MAIL_SECURE=false
+MAIL_USER=<your-email>
+MAIL_PASS=<your-email-password>
+
+DEVELOPMENT_FRONTEND_URL=https://your-dev-frontend.com
+PRODUCTION_FRONTEND_URL=https://your-prod-frontend.com
+
+FAST_API_URL=http://<ip-address>:8000/
+
+NODE_ENV=development
+NEXT_CLIENT_URL=https://your-client-url.com
+
+CLOUDINARY_CLOUD_NAME=<cloud-name>
+CLOUDINARY_API_KEY=<cloud-api-key>
+CLOUDINARY_API_SECRET=<cloud-api-secret>
+```
+3. Jalankan
+```bash
+npx prisma generate
+npm run start:dev
+npm run build        # Build aplikasi
+npm run start:prod   # Jalankan produksi
+npm run test         # Jalankan testing
+npm run lint         # Periksa dan perbaiki kode
+```
+
+## Instalasi menggunakan docker
+```bash
+docker build -t sortify-frontend .
+docker run -p 5000:5000 --env-file .env sortify-be
+```
